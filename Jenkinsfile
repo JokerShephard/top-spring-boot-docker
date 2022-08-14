@@ -24,7 +24,7 @@ pipeline {
                 
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
-                sh "docker build --build-arg JAR_FILE=target/*.jar -t myorg/myapp ."
+                // sh "docker build --build-arg JAR_FILE=target/*.jar -t myorg/myapp ."
             }
         }
 		
