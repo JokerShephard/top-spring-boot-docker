@@ -1,16 +1,23 @@
 pipeline {
     agent any
 
+	tools{
+		maven ''
+	}
 
     stages {
         stage('Build') {
             steps {
-				echo 'First stage - maven build'
-                // Get some code from a GitHub repository
-                git 'https://github.com/JokerShephard/top-spring-boot-docker.git'
-
-                // Run Maven on a Unix agent.
+				echo ' --- First stage - maven build --- '
+                
+				// Run Maven on a Unix agent.
                 sh "./mvnw install"
+				
+				checkout scm
+				sh './mvnw -B -DskipTests clean package'
+				docker.withCredentials('dockerhub').build("jokershephard/DevOpsExercise").push()
+				
+                
                 
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
@@ -20,7 +27,7 @@ pipeline {
 		
 		stage('Dockerize'){
 			steps {
-				echo 'second stage - Dockerize'
+				echo ' --- second stage - Dockerize --- '
 			}
 		
 		}
