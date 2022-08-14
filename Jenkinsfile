@@ -34,13 +34,12 @@ pipeline {
 			}
 		
 		}
-		
+	}
+	
 		post {
 			always{
 				cleanWs()
 			}
 		}
-
-
-    }
+		
 }
