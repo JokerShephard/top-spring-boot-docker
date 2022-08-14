@@ -1,44 +1,30 @@
 pipeline {
-	agent none
+    agent any
 
-	triggers {
-		pollSCM 'H/10 * * * *'
-	}
 
-	options {
-		disableConcurrentBuilds()
-		buildDiscarder(logRotator(numToKeepStr: '14'))
-	}
+    stages {
+        stage('Build') {
+            steps {
+				echo 'First stage - maven build'
+                // Get some code from a GitHub repository
+                git 'https://github.com/JokerShephard/top-spring-boot-docker.git'
 
-	stages {
-		stage("test: baseline (jdk8)") {
-			agent {
-				docker {
-					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
-				}
-			}
-			options { timeout(time: 30, unit: 'MINUTES') }
+                // Run Maven on a Unix agent.
+                sh "./mvnw install"
+                
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                sh "docker build --build-arg JAR_FILE=target/*.jar -t myorg/myapp ."
+            }
+        }
+		
+		stage('Dockerize'){
 			steps {
-				sh 'test/run.sh'
+				echo 'second stage - Dockerize'
 			}
+		
 		}
 
-	}
 
-	post {
-		changed {
-			script {
-				slackSend(
-						color: (currentBuild.currentResult == 'SUCCESS') ? 'good' : 'danger',
-						channel: '#sagan-content',
-						message: "${currentBuild.fullDisplayName} - `${currentBuild.currentResult}`\n${env.BUILD_URL}")
-				emailext(
-						subject: "[${currentBuild.fullDisplayName}] ${currentBuild.currentResult}",
-						mimeType: 'text/html',
-						recipientProviders: [[$class: 'CulpritsRecipientProvider'], [$class: 'RequesterRecipientProvider']],
-						body: "<a href=\"${env.BUILD_URL}\">${currentBuild.fullDisplayName} is reported as ${currentBuild.currentResult}</a>")
-			}
-		}
-	}
+    }
 }
