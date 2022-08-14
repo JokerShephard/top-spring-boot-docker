@@ -16,9 +16,9 @@ pipeline {
                 sh "./mvnw install"
 				sh "mvn -version"
 				
-				checkout scm
-				sh './mvnw -B -DskipTests clean package'
-				docker.withCredentials(dockerhub).build("jokershephard/DevOpsExercise").push()
+				//checkout scm
+				//sh './mvnw -B -DskipTests clean package'
+				//docker.withCredentials(dockerhub).build("jokershephard/DevOpsExercise").push()
 				
                 
                 
