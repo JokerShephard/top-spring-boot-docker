@@ -2,7 +2,7 @@ pipeline {
     agent any
 
 	tools{
-		maven ''
+		maven 'Apache-Maven 3.6.0'
 	}
 
     stages {
@@ -33,6 +33,12 @@ pipeline {
 				echo ' --- second stage - Dockerize --- '
 			}
 		
+		}
+		
+		post {
+			always{
+				cleanWs()
+			}
 		}
 
 
