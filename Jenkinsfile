@@ -10,12 +10,15 @@ pipeline {
             steps {
 				echo ' --- First stage - maven build --- '
                 
+				sh "mvn -version"
+				
 				// Run Maven on a Unix agent.
                 sh "./mvnw install"
+				sh "mvn -version"
 				
 				checkout scm
 				sh './mvnw -B -DskipTests clean package'
-				docker.withCredentials('dockerhub').build("jokershephard/DevOpsExercise").push()
+				docker.withCredentials(dockerhub).build("jokershephard/DevOpsExercise").push()
 				
                 
                 
